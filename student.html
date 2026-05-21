@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduManage | School Management System</title>
+    <style>
+        /* Modern Reset & CSS Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #2ecc71;
+            --bg-light: #f8f9fa;
+            --text-dark: #333;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 20px 25px;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--secondary-color);
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .header {
+            background-color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        /* Feature Tabs Visibility */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* UI Components: Cards & Metrics */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border-top: 4px solid var(--secondary-color);
+        }
+
+        .card.success { border-top-color: var(--accent-color); }
+
+        .card h3 {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .card .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* UI Components: Tables & Forms */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .form-inline {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        input, select, button {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-present { background-color: #d1fae5; color: #065f46; }
+        .status-absent { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">EduManage SMS</div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active" onclick="switchTab('dashboard')">Dashboard</li>
+            <li class="menu-item" onclick="switchTab('students')">Student Directory</li>
+            <li class="menu-item" onclick="switchTab('attendance')">Attendance</li>
+            <li class="menu-item" onclick="switchTab('grades')">Gradebook</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Window -->
+    <main class="main-content">
+        <header class="header">
+            <h2>School Management Console</h2>
+            <div class="user-profile">
+                <span>Welcome, Principal Admin</span>
+            </div>
+        </header>
+
+        <div class="container">
+            
+            <!-- FEATURE 1: DASHBOARD OVERVIEW -->
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Total Students</h3>
+                        <div class="value">1,245</div>
+                    </div>
+                    <div class="card success">
+                        <h3>Daily Attendance Rate</h3>
+                        <div class="value">94.2%</div>
+                    </div>
+                    <div class="card">
+                        <h3>Active Teachers</h3>
+                        <div class="value">58</div>
+                    </div>
+                </div>
+                
+                <h3>Recent System Activity</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Target Module</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Grade updated for John Doe (Math)</td>
+                            <td>Gradebook</td>
+                            <td>Just now</td>
+                        </tr>
+                        <tr>
+                            <td>New student registration: Jane Smith</td>
+                            <td>Student Directory</td>
+                            <td>10 minutes ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FEATURE 2: STUDENT DIRECTORY -->
+            <div id="students" class="tab-content">
+                <h3>Student Registry & Management</h3>
+                <div class="form-inline">
+                    <input type="text" id="studName" placeholder="Student Name">
+                    <input type="text" id="studClass" placeholder="Class/Grade">
+                    <button onclick="addStudent()">Register Student</button>
+                </div>
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Class/Grade</th>
+                            <th>Enrollment Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#STU101</td>
+                            <td>John Doe</td>
+                            <td>Grade 10-A</td>
+                            <td>Aug 15, 2025</td>
+                        </tr>
+                        <tr>
+                            <td>#STU102</td>
+                            <td>Jane Smith</td>
+                            <td>Grade 11-B</td>
+                            <td>Sep 02, 2025</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FEATURE 3: ATTENDANCE TRACKER -->
+            <div id="attendance" class="tab-content">
+                <h3>Daily Attendance Tracker</h3>
+                <p style="margin-bottom: 15px; color:#666;">Mark live attendance for today's active session:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Class</th>
+                            <th>Status Mode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>Grade 10-A</td>
+                            <td>
+                                <span class="status-badge status-present">Present</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>Grade 11-B</td>
+                            <td>
+                                <span class="status-badge status-absent">Absent</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FEATURE 4: GRADEBOOK -->
+            <div id="grades" class="tab-content">
+                <h3>Academic Gradebook</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Mathematics</th>
+                            <th>Science</th>
+                            <th>English Literature</th>
+                            <th>Overall GPA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>A (92%)</td>
+                            <td>B+ (87%)</td>
+                            <td>A- (90%)</td>
+                            <td>3.8</td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>B (83%)</td>
+                            <td>A (95%)</td>
+                            <td>A (94%)</td>
+                            <td>3.7</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Logic Engine (Tab Switching & Mock Data Processing) -->
+    <script>
+        // Simple client-side routing/tab switcher
+        function switchTab(tabId) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active style from menu buttons
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => item.classList.remove('active'));
+            
+            // Display targeted tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight the active menu button
+            event.currentTarget.classList.add('active');
+        }
+
+        // Feature Action Example: Adding dynamic student rows 
+        let studentCount = 102;
+        function addStudent() {
+            const nameInput = document.getElementById('studName');
+            const classInput = document.getElementById('studClass');
+            
+            if(!nameInput.value || !classInput.value) {
+                alert('Please enter both a student name and class.');
+                return;
+            }
+            
+            studentCount++;
+            const table = document.getElementById('studentTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            
+            newRow.innerHTML = `
+                <td>#STU${studentCount}</td>
+                <td>${nameInput.value}</td>
+                <td>${classInput.value}</td>
+                <td>Today</td>
+            `;
+            
+            // Clear inputs
+            nameInput.value = '';
+            classInput.value = '';
+        }
+    </script>
+</body>
+</html>
